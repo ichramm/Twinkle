@@ -35,6 +35,7 @@
 #include "sdp/sdp.h"
 #include "sockets/socket.h"
 #include "stun/stun_transaction.h"
+#include "parser/parse_ctrl.h"
 
 extern t_event_queue	*evq_sender;
 extern t_event_queue	*evq_trans_mgr;
@@ -2367,6 +2368,7 @@ void t_dialog::send_invite(const t_url &to_uri, const string &to_display,
 		const string &subject, const t_hdr_referred_by &hdr_referred_by,
 		const t_hdr_replaces &hdr_replaces, 
 		const t_hdr_require &hdr_require, 
+		const t_sip_message &m,
 		const t_hdr_request_disposition &hdr_request_disposition,
 		bool anonymous)
 {
@@ -2469,6 +2471,15 @@ void t_dialog::send_invite(const t_url &to_uri, const string &to_display,
 	
 	// RFC 3891 Replaces header
 	invite.hdr_replaces = hdr_replaces;
+
+	invite.hdr_expires = m.hdr_expires;
+
+	//add all unknown headers
+	for (list<t_parameter>::const_iterator i = m.unknown_headers.begin();
+		 i != m.unknown_headers.end(); i++)
+	{
+		invite.add_unknown_header(i->name, i->value);
+	}
 	
 	// Add required extension passed by the upper layer
 	if (hdr_require.is_populated()) {
@@ -2625,6 +2636,19 @@ bool t_dialog::redirect_invite(t_response *resp) {
 	// As the URI changes the destination set must be recalculated
 	req->uri = contact.uri;
 	req->calc_destinations(*user_config);
+
+	t_sip_message *sipmessage = (t_sip_message *)req;
+	if (!contact.uri.get_headers().empty()) {
+		list<string> parse_errors;
+		t_sip_message *m;
+		m = t_parser::parse_headers(contact.uri.get_headers(), parse_errors);
+		t_sip_message &rm = *m;
+		for (list<t_parameter>::const_iterator i = rm.unknown_headers.begin();
+				 i != rm.unknown_headers.end(); i++)
+			{
+				sipmessage->add_unknown_header(i->name, i->value);
+			}
+	}
 
 	ui->cb_redirecting_request(user_config, line->get_line_number(), contact);
 	resend_request(req_out_invite);
