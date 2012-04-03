@@ -96,7 +96,7 @@ t_sip_message *t_parser::parse_headers(const string &s, list<string> &parse_erro
 	string msg("INVITE sip:fake@fake.invalid SIP/2.0");
 	msg += CRLF;
 	
-	list<t_parameter> hdr_list = str2param_list(s);
+	list<t_parameter> hdr_list = str2param_list(s, '&');
 	for (list<t_parameter>::iterator i = hdr_list.begin();
 	     i != hdr_list.end(); i++)
 	{
