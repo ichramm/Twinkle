@@ -15,7 +15,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
 #include "parameter.h"
 #include "util.h"
 
@@ -77,10 +76,10 @@ string param_list2str(const list<t_parameter> &l) {
 	return s;
 }
 
-list<t_parameter> str2param_list(const string &s) {
+list<t_parameter> str2param_list(const string &s, char delimiter) {
 	list<t_parameter> result;
 	
-	vector<string> l = split(s, ';');
+	vector<string> l = split(s, delimiter);
 	for (vector<string>::const_iterator i = l.begin(); i != l.end(); i++) {
 		t_parameter p = str2param(trim(*i));
 		result.push_back(p);

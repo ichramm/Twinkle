@@ -55,6 +55,6 @@ t_parameter str2param(const string &s);
 string param_list2str(const list<t_parameter> &l);
 
 // Decode a parameter list
-list<t_parameter> str2param_list(const string &s);
+list<t_parameter> str2param_list(const string &s, char delimiter = ';');
 
 #endif
