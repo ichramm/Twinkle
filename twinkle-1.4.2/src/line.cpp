@@ -569,7 +569,7 @@ void t_line::invite(t_phone_user *pu, const t_url &to_uri, const string &to_disp
 	}
 
 	invite(pu, to_uri, to_display, subject, t_hdr_referred_by(), 
-			t_hdr_replaces(), t_hdr_require(), hdr_request_disposition,
+			t_hdr_replaces(), t_hdr_require(), t_sip_message(), hdr_request_disposition,
 			anonymous);
 }
 
@@ -577,6 +577,7 @@ void t_line::invite(t_phone_user *pu, const t_url &to_uri, const string &to_disp
 		const string &subject, const t_hdr_referred_by &hdr_referred_by,
 		const t_hdr_replaces &hdr_replaces,
 		const t_hdr_require &hdr_require, 
+		const t_sip_message &m,
 		const t_hdr_request_disposition &hdr_request_disposition,
 		bool anonymous)
 {
@@ -618,7 +619,7 @@ void t_line::invite(t_phone_user *pu, const t_url &to_uri, const string &to_disp
 	open_dialog = new t_dialog(this);
 	MEMMAN_NEW(open_dialog);
 	open_dialog->send_invite(to_uri, to_display, subject, hdr_referred_by, 
-			hdr_replaces, hdr_require, hdr_request_disposition,
+			hdr_replaces, hdr_require, m, hdr_request_disposition,
 			anonymous);
 
 	cleanup();

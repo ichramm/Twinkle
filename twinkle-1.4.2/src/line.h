@@ -220,7 +220,7 @@ public:
 	 */
 	void invite(t_phone_user *pu, const t_url &to_uri, const string &to_display,
 		const string &subject, const t_hdr_referred_by &hdr_referred_by,
-		const t_hdr_replaces &hdr_replaces, const t_hdr_require &hdr_require,
+		const t_hdr_replaces &hdr_replaces, const t_hdr_require &hdr_require, const t_sip_message &m,
 		const t_hdr_request_disposition &hdr_request_disposition,
 		bool anonymous);
 		
