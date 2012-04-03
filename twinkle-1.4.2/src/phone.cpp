@@ -1857,16 +1857,15 @@ void t_phone::recvd_refer_permission(bool permission) {
 	// will contain a Replaces header and possibly a Require
 	// header. Other headers are ignored for now.
 	// See draft-ietf-sipping-cc-transfer-07 7.3
+	t_sip_message *m;
 	if (!r->hdr_refer_to.uri.get_headers().empty()) {
 		try {
 			list<string> parse_errors;
-			t_sip_message *m = t_parser::parse_headers(
+			m = t_parser::parse_headers(
 					r->hdr_refer_to.uri.get_headers(),
 					parse_errors);
 			hdr_replaces = m->hdr_replaces;
 			hdr_require = m->hdr_require;
-			MEMMAN_DELETE(m);
-			delete m;
 		} catch (int) {
 			log_file->write_header("t_phone::recvd_refer_permission",
 					LOG_NORMAL, LOG_WARNING);
@@ -1876,14 +1875,17 @@ void t_phone::recvd_refer_permission(bool permission) {
 			log_file->write_footer();
 		}
 	}
+	t_sip_message &rm = *m;
 	
 	ui->cb_call_referred(user_config, i, r);
 	
 	lines[i]->invite(pu, 
 		r->hdr_refer_to.uri.copy_without_headers(),
 		r->hdr_refer_to.display, "", r->hdr_referred_by, 
-		hdr_replaces, hdr_require, t_hdr_request_disposition(),
+		hdr_replaces, hdr_require, rm, t_hdr_request_disposition(),
 		hide_user);
+	MEMMAN_DELETE(m);
+	delete m;
 	lines[i]->open_dialog->is_referred_call = true;
 	
 	MEMMAN_DELETE(incoming_refer_data);
